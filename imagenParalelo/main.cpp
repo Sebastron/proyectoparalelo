@@ -52,22 +52,22 @@ void difuminarImagen(Mat imagen, Mat nueva_imagen, float desviacion){
         for(int y = 0; y < imagen.rows; y++){
             for(int c = 0; c < 3; c++){
                 float suma_Gauss = 0;
-                for(int kx = -1; kx < 2; kx++){
-                    for(int ky = -1; ky < 2; ky++){
-                        if(kx + x >= 0 && kx + x < imagen.cols){
-                            if(ky+y >= 0 && ky+y < imagen.rows){
-                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y+ky,x+kx)[c]) * mascara[ky+1][kx+1]);
+                for(int posicion_mascara_x = -1; posicion_mascara_x < 2; posicion_mascara_x++){
+                    for(int posicion_mascara_y = -1; posicion_mascara_y < 2; posicion_mascara_y++){
+                        if(posicion_mascara_x + x >= 0 && posicion_mascara_x + x < imagen.cols){
+                            if(posicion_mascara_y + y >= 0 && posicion_mascara_y + y < imagen.rows){
+                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y + posicion_mascara_y,x + posicion_mascara_x)[c]) * mascara[posicion_mascara_y+1][posicion_mascara_x+1]);
                             }
                             else{
-                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y,x+kx)[c]) * mascara[ky+1][kx+1]);
+                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y,x + posicion_mascara_x)[c]) * mascara[posicion_mascara_x+1][posicion_mascara_x+1]);
                             }
                         }
                         else{
-                            if(ky+y >= 0 && ky+y < imagen.rows){
-                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y+ky,x)[c]) * mascara[ky+1][kx+1]);
+                            if(posicion_mascara_y+y >= 0 && posicion_mascara_y+y < imagen.rows){
+                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y + posicion_mascara_y,x)[c]) * mascara[posicion_mascara_y+1][posicion_mascara_x+1]);
                             }
                             else{
-                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y,x)[c]) * mascara[ky+1][kx+1]);
+                                suma_Gauss = suma_Gauss + ((float)(imagen.at<Vec3b>(y,x)[c]) * mascara[posicion_mascara_y+1][posicion_mascara_x+1]);
                             }
                         }
                     }
