@@ -24,7 +24,7 @@ float desviacion = 0.98; // Se utiliza para difuminar una imagen
 //Funciones utilizadas
 
 string nombreImagenSalida(string opcion){
-    string path_imagen_salida = "/media/sf_Compartido/proyectoparalelo/imagenParalelo/imagenes/";
+    string path_imagen_salida = "./imagenes/";
     time_t hoy = time(0);
     struct tm tstruct;
     char buf[80];
