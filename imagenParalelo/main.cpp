@@ -10,19 +10,21 @@
 #include <vector>
 #include <ctime>
 #include <cmath>
+#include <opencv4/opencv2/core/mat.hpp>
 
 using namespace cv;
 using namespace std;
 
 // Variables globales necesarias
-Mat imagen;
-Mat nueva_imagen;
+Mat imagen; // Imagen de entrada
+Mat nueva_imagen; // Imagen de salida
+float escala = 2.0; // Valor para escalar una imagen, en este caso, escala de x2 
+float desviacion = 0.98; // Se utiliza para difuminar una imagen
 
 //Funciones utilizadas
 
-
 string nombreImagenSalida(string opcion){
-    string path_imagen_salida = "/media/sf_Compartido/proyectoparalelo/imagenParalelo/";
+    string path_imagen_salida = "/media/sf_Compartido/proyectoparalelo/imagenParalelo/imagenes/";
     time_t hoy = time(0);
     struct tm tstruct;
     char buf[80];
@@ -30,14 +32,6 @@ string nombreImagenSalida(string opcion){
     strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", &tstruct);
     string fechayhora(buf);
     return (path_imagen_salida + "programa_" + opcion + "_" + fechayhora + ".png");
-}
-
-float interpolacionLineal(float valor_pixel, float valor_pixel_adyacente, float distancia){
-    return valor_pixel + (valor_pixel_adyacente - valor_pixel) * distancia;
-}
-
-float interpolacionBilineal(float pixel00, float pixel10, float pixel01, float pixel11, float x, float y){
-    return interpolacionLineal(interpolacionLineal(pixel00, pixel10, x), interpolacionLineal(pixel01, pixel11, x), y);
 }
 
 void difuminarImagen(Mat imagen, Mat nueva_imagen, float desviacion){
@@ -90,22 +84,8 @@ void escalagrisImagen(Mat imagen, Mat nueva_imagen){
     }
 }
 
-
-void escalarImagenX2(Mat imagen, Mat nueva_imagen, int minimo_x, int minimo_y,int maximo_x, int maximo_y){
-    for(int x = minimo_x; x < maximo_x; x++){
-        for(int y = minimo_y; y < maximo_y; y++){
-            float escaladox = ((float)(x) / nueva_imagen.cols) * (imagen.cols - 1);
-            float escaladoy = ((float)(y) / nueva_imagen.rows) * (imagen.rows - 1);
-            int escaladoxi = (int) escaladox;
-            int escaladoyi = (int) escaladoy;
-            int rojo = interpolacionBilineal(imagen.at<Vec3b>(escaladoyi, escaladoxi)[0], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi)[0], imagen.at<Vec3b>(escaladoyi, escaladoxi + 1)[0], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi + 1)[0], escaladox - escaladoxi, escaladoy - escaladoyi);
-            int verde = interpolacionBilineal(imagen.at<Vec3b>(escaladoyi, escaladoxi)[1], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi)[1], imagen.at<Vec3b>(escaladoyi, escaladoxi + 1)[1], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi + 1)[1], escaladox - escaladoxi, escaladoy - escaladoyi);
-            int azul = interpolacionBilineal(imagen.at<Vec3b>(escaladoyi, escaladoxi)[2], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi)[2], imagen.at<Vec3b>(escaladoyi, escaladoxi + 1)[2], imagen.at<Vec3b>(escaladoyi + 1, escaladoxi + 1)[2], escaladox - escaladoxi, escaladoy - escaladoyi);
-            nueva_imagen.at<Vec3b>(y, x)[0] = rojo;
-            nueva_imagen.at<Vec3b>(y, x)[1] = verde;
-            nueva_imagen.at<Vec3b>(y, x)[2] = azul;
-        }
-    }
+void escalarImagen(Mat imagen, Mat nueva_imagen, float escala){
+    resize(imagen, nueva_imagen, Size(imagen.cols*escala, imagen.rows*escala), escala - 1, escala - 1); // Funcion nativa de opencv
 }
 
 int main(int argc, char** argv){
@@ -116,7 +96,6 @@ int main(int argc, char** argv){
         MPI_Comm_size(MPI_COMM_WORLD, &procesadores);
         if(*argv[1] == '1'){
             if(rango == 0){
-                float desviacion = 0.95;
                 imagen = imread(argv[2], -1);
                 nueva_imagen.create(imagen.rows, imagen.cols, CV_8UC3);
                 difuminarImagen(imagen, nueva_imagen, desviacion);
@@ -142,8 +121,8 @@ int main(int argc, char** argv){
         if(*argv[1] == '3'){
             if(rango == 0){
                 imagen = imread(argv[2], -1);
-                nueva_imagen.create(imagen.rows, imagen.cols, CV_8UC3);
-                escalarImagenX2(imagen, nueva_imagen, 0, 0, imagen.rows*2.0, imagen.cols*2.0);
+                nueva_imagen.create(imagen.rows*escala, imagen.cols*escala, CV_8UC3);
+                escalarImagen(imagen, nueva_imagen, escala);
                 string salida = nombreImagenSalida("3");
                 imwrite(salida, nueva_imagen);
             }
@@ -152,7 +131,8 @@ int main(int argc, char** argv){
             }*/
         }
         if(*argv[1] != '1' && *argv[1] != '2' && *argv[1] != '3'){
-            cout<<"No has ingresado la opción 1, 2 o 3"<<endl;
+            cout << "No has ingresado la opción 1, 2 o 3" << endl;
+            return EXIT_FAILURE;
         }
         MPI_Finalize();
     }
