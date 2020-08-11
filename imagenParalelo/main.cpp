@@ -19,9 +19,29 @@ using namespace std;
 Mat imagen; // Imagen de entrada
 Mat nueva_imagen; // Imagen de salida
 float escala = 2.0; // Valor para escalar una imagen, en este caso, escala de x2 
-float desviacion = 0.98; // Se utiliza para difuminar una imagen
+float desviacion = 0.99; // Se utiliza para difuminar una imagen
 
 //Funciones utilizadas
+
+
+void enviarImagen(Mat imagen_enviar, int destino){
+    int tamanos[3];
+    tamanos[2] = imagen_enviar.elemSize();
+    Size tamano = imagen_enviar.size();
+    tamanos[0] = tamano.height;
+    tamanos[1] = tamano.width;
+    MPI_Send(tamanos, 3, MPI_INT, destino, 0, MPI_COMM_WORLD);
+    MPI_Send(imagen_enviar.data, tamanos[0]*tamanos[1]*4, MPI_CHAR, destino, 1, MPI_COMM_WORLD);
+}
+
+void recibirImagen(Mat &imagen_recibir, int origen){
+    MPI_Status estado;
+    int tamanos[3];
+    MPI_Recv(tamanos, 3, MPI_INT, origen, 0, MPI_COMM_WORLD, &estado);
+    imagen_recibir.create(tamanos[0], tamanos[1], CV_8UC3);
+    MPI_Recv(imagen_recibir.data, tamanos[0] * tamanos[1] * 4, MPI_CHAR, origen, 1, MPI_COMM_WORLD, &estado);
+}
+
 
 string nombreImagenSalida(string opcion){
     string path_imagen_salida = "./imagenes/";
@@ -39,7 +59,7 @@ void difuminarImagen(Mat imagen, Mat nueva_imagen, float desviacion){
     for(int i = 0; i<3; i++){
         for(int j = 0; j<3; j++){
             float elevar = exp(((-pow(i-1,2)-pow(j-1,2))/(2*pow(desviacion,2))));
-            mascara[i][j]=elevar/(2*3.1416*pow(desviacion,2));
+            mascara[i][j] = elevar/(2*3.1416*pow(desviacion,2));
         }
     }
     for(int x = 0; x < imagen.cols; x++){
@@ -88,52 +108,60 @@ void escalarImagen(Mat imagen, Mat nueva_imagen, float escala){
     resize(imagen, nueva_imagen, Size(imagen.cols*escala, imagen.rows*escala), escala - 1, escala - 1); // Funcion nativa de opencv
 }
 
+
+// Función Main y de MPI
 int main(int argc, char** argv){
     if (argc > 2){
         int rango, procesadores;
         MPI_Init(&argc, &argv);
         MPI_Comm_rank(MPI_COMM_WORLD, &rango);
         MPI_Comm_size(MPI_COMM_WORLD, &procesadores);
-        if(*argv[1] == '1'){
+        /*if(*argv[1] == '1'){
+            cout << rango << endl;
+        }
+        */if(*argv[1] == '1'){
             if(rango == 0){
                 imagen = imread(argv[2], -1);
                 nueva_imagen.create(imagen.rows, imagen.cols, CV_8UC3);
                 difuminarImagen(imagen, nueva_imagen, desviacion);
+                enviarImagen(nueva_imagen, 1);
+            }
+            else{
+                recibirImagen(nueva_imagen, 0);
                 string salida = nombreImagenSalida("1");
                 imwrite(salida, nueva_imagen);
             }
-            /*else{
-                
-            }*/
         }
         if(*argv[1] == '2'){
             if(rango == 0){
                 imagen = imread(argv[2], -1);
                 nueva_imagen.create(imagen.rows, imagen.cols, CV_8UC3);
                 escalagrisImagen(imagen, nueva_imagen);
+                enviarImagen(nueva_imagen, 1);
+            }
+            else{
+                recibirImagen(nueva_imagen, 0);
                 string salida = nombreImagenSalida("2");
                 imwrite(salida, nueva_imagen);
             }
-            /*else{
-                
-            }*/
         }
         if(*argv[1] == '3'){
             if(rango == 0){
                 imagen = imread(argv[2], -1);
                 nueva_imagen.create(imagen.rows*escala, imagen.cols*escala, CV_8UC3);
                 escalarImagen(imagen, nueva_imagen, escala);
+                enviarImagen(nueva_imagen, 1);
+            }
+            else{
+                recibirImagen(nueva_imagen, 0);
                 string salida = nombreImagenSalida("3");
                 imwrite(salida, nueva_imagen);
             }
-            /*else{
-                
-            }*/
         }
         if(*argv[1] != '1' && *argv[1] != '2' && *argv[1] != '3'){
             cout << "No has ingresado la opción 1, 2 o 3" << endl;
             return EXIT_FAILURE;
-        }
+        }//*/
         MPI_Finalize();
     }
     else{
