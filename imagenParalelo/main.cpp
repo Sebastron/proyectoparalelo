@@ -17,24 +17,26 @@ using namespace cv;
 using namespace std;
 
 // Variables globales necesarias
-const int maximo_bytes=8*1920*1920;
-uchar buffer[maximo_bytes];
+const int maximo_bytes=8*1920*1920; // Se establece un límite, donde no se puede trabajar mas de 8 procesos y la imagen no puede superar el ancho y largo de 1920 
+uchar buffer[maximo_bytes]; // Variable global que contiene la transformación de imagenes, para facilitar el envio y recibo de ellos
 float escala = 2.0; // Valor para escalar una imagen, en este caso, escala de x2 
 float desviacion = 0.99; // Se utiliza para difuminar una imagen
 
 //Funciones utilizadas
 
+// Función que imprime los integrantes que ha construido el proyecto
 void integrantes(){
     cout<<"-----------------------------------------"<<endl;
     cout<<"Sebastian Garrido Valenzuela."<<endl;
     cout<<"Javier Galvez Gonzalez."<<endl;
     cout<<"Ramiro Uribe Garrido."<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Gracias por utilizar el programa y espero que le guste, no ha sido fácil construirla."<<endl;
+    cout<<"Gracias por utilizar el programa y espero que le guste la imagen generada."<<endl;
     cout<<"-----------------------------------------"<<endl;
 }
 
-
+// Función que permite enviar una imagen
+// a otro proceso como destino.
 void enviarImagen(Mat imagen_enviar, int destino){
     int filas = imagen_enviar.rows;
     int columnas = imagen_enviar.cols;
@@ -51,6 +53,8 @@ void enviarImagen(Mat imagen_enviar, int destino){
     MPI_Send(&buffer, bytes+3*sizeof(int), MPI_UNSIGNED_CHAR, destino, 0, MPI_COMM_WORLD);
 }
 
+// Función que permite recibir una imagen,
+// que fue enviada desde otro proceso de origen.
 Mat recibirImagen(int origen){
     MPI_Status status;
     int contador, filas, columnas, tipo;
@@ -62,7 +66,8 @@ Mat recibirImagen(int origen){
     return Mat(filas, columnas, tipo, (uchar*)&buffer[3*sizeof(int)]);
 }
 
-
+// Funcion que retorna el nombre del archivo de imágen
+// PNG que se está generando de acuerdo a la opción ingresada
 string nombreImagenSalida(char opcion){
     string path_imagen_salida = "./imagenes/";
     time_t hoy = time(0);
@@ -74,19 +79,21 @@ string nombreImagenSalida(char opcion){
     return (path_imagen_salida + "programa_" + opcion + "_" + fechayhora + ".png");
 }
 
+// Función que permite difuminar una parte imagen aplicando el método gauss,
+// en base al valor de desviación, que es la variable global
 void difuminarImagen(Mat imagen, Mat nueva_imagen, float desviacion){
-    double mascara[3][3];
-    for(int i = 0; i<3; i++){
+    double mascara[3][3]; // Funcion que obtiene un kernel o mascara de tamaño 3 x 3
+    for(int i = 0; i<3; i++){ // Se recorre la mascara
         for(int j = 0; j<3; j++){
             float elevar = exp(((-pow(i-1,2)-pow(j-1,2))/(2*pow(desviacion,2))));
             mascara[i][j] = elevar/(2*3.1416*pow(desviacion,2));
         }
     }
-    for(int x = 0; x < imagen.cols; x++){
-        for(int y = 0; y < imagen.rows; y++){
-            for(int c = 0; c < 3; c++){
-                float suma_Gauss = 0;
-                for(int posicion_mascara_x = -1; posicion_mascara_x < 2; posicion_mascara_x++){
+    for(int x = 0; x < imagen.cols; x++){ // Se procede a recorrer la imagen original pixel por pixel
+        for(int y = 0; y < imagen.rows; y++){ 
+            for(int c = 0; c < 3; c++){ // Se recorre los 3 canales dentro de una posición pixel de la imagen
+                float suma_Gauss = 0; // Se inicializa la sumatoria del método Gauss
+                for(int posicion_mascara_x = -1; posicion_mascara_x < 2; posicion_mascara_x++){ // Se recorre la posición de la mascara generada
                     for(int posicion_mascara_y = -1; posicion_mascara_y < 2; posicion_mascara_y++){
                         if(posicion_mascara_x + x >= 0 && posicion_mascara_x + x < imagen.cols){
                             if(posicion_mascara_y + y >= 0 && posicion_mascara_y + y < imagen.rows){
@@ -106,27 +113,30 @@ void difuminarImagen(Mat imagen, Mat nueva_imagen, float desviacion){
                         }
                     }
                 }
-                nueva_imagen.at<Vec3b>(y,x)[c] = suma_Gauss;
+                nueva_imagen.at<Vec3b>(y,x)[c] = suma_Gauss; // Se reemplaza el valor obtenido en la sumatoria del método Gauss
             }
         }
     }
 }
 
+// Función que permite aplicar escala de gris a una parte imagen
 void escalagrisImagen(Mat imagen, Mat nueva_imagen){
-    for(int x=0; x<imagen.cols; x++){
+    for(int x=0; x<imagen.cols; x++){ // Se recorre los pixeles, por columnas y filas
         for(int y=0; y<imagen.rows; y++){
-            float valores_promedio = 0;
-            valores_promedio = (imagen.at<Vec3b>(y,x)[0] + imagen.at<Vec3b>(y,x)[1] + imagen.at<Vec3b>(y,x)[2])/3;
-            nueva_imagen.at<Vec3b>(y,x)[0] = valores_promedio;
+            float valores_promedio = 0; // Se inicializa el promedio
+            valores_promedio = (imagen.at<Vec3b>(y,x)[0] + imagen.at<Vec3b>(y,x)[1] + imagen.at<Vec3b>(y,x)[2])/3; // Se obtiene promedio de 3 valores de pixeles en los 3 canales
+            nueva_imagen.at<Vec3b>(y,x)[0] = valores_promedio; // Se reemplaza el valor por promedio adquirido anteriormente
             nueva_imagen.at<Vec3b>(y,x)[1] = valores_promedio;
             nueva_imagen.at<Vec3b>(y,x)[2] = valores_promedio;
         }
     }
 }
 
+// Función que permite procesar una ṕarte de la imagen, de acuerdo
+// a la opcion ingresada por el usuario.
 Mat procesarImagen(char opcion, Mat parte_imagen, float escala){
     Mat parte_procesada = parte_imagen.clone(); // Se inicializa una parte de la imágen final
-    if (opcion == '1') { // Se difumina a una parte de la imagen
+    if (opcion == '1') { // Se difumina una parte de la imagen
         difuminarImagen(parte_imagen, parte_procesada, desviacion);
     }
     if (opcion == '2') { // Se aplica escala a gris a una parte de la imagen
@@ -138,11 +148,14 @@ Mat procesarImagen(char opcion, Mat parte_imagen, float escala){
     return parte_procesada;
 }
 
+// Función que permite unir partes de las imagenes procesadas,
+// lo cual recibe parte de la imagen procesada y otra imagen final
+// en construcción.
 void unirImagen(Mat parte_imagen, Mat & final) {
-    if (final.empty()) {
+    if (final.empty()) { // En caso de no haber unido alguna parte de la imagen anteriormente
         final = parte_imagen.clone();
     }
-    else {
+    else { // En caso de si haber juntado algun pedazo de la imagen
         hconcat(final, parte_imagen, final);
     }
 }
@@ -155,10 +168,10 @@ int main(int argc, char** argv){
             cout << "No has ingresado la opción 1, 2 o 3" << endl;
             return EXIT_FAILURE;
         }
-        int rango, procesadores;
+        int rango, procesos;
         MPI_Init(&argc, &argv); // Se inicializa el MPI
         MPI_Comm_rank(MPI_COMM_WORLD, &rango); // Se identifica el rango
-        MPI_Comm_size(MPI_COMM_WORLD, &procesadores); // Se identifica los procesadores
+        MPI_Comm_size(MPI_COMM_WORLD, &procesos); // Se identifica la cantidad de procesos
         Mat imagen = imread(argv[2], -1); // Se lee la imagen a la ruta ingresada
         if (imagen.empty()) { // En caso de que la imagen no sea valida o no se haya ingresado.
             cout << "Usted no ha ingresado la ruta de la imagen existente" << endl;
@@ -168,24 +181,24 @@ int main(int argc, char** argv){
             cout << "Usted ha ingresado una imágen invalida." << endl;
             return EXIT_FAILURE;
         }
-        int longitud_rebanada = imagen.cols/(procesadores-1); // Divido la imagen en base a la cantidad de procesadores disponibles
-        if (rango == 0) { // En caso de ser el procesador maestro, se distribuye las tareas
+        int longitud_rebanada = imagen.cols/(procesos-1); // Divido la imagen en base a la cantidad de procesadores disponibles
+        if (rango == 0) { // En caso de ser el proceso maestro, se distribuye las tareas
             Mat nueva_imagen; // Se inicializa la nueva imágen
             int hilox = 1; // Se inicializa el contador para asignar tareas a los hilos
             for (int i=0; i< imagen.cols; i = i + longitud_rebanada){ // Empieza el proceso por partes 
                 Mat imagen_dividida = imagen(Rect(i, 0, longitud_rebanada, imagen.rows)).clone(); // Se inicializa la porción de una imagen a procesar
                 enviarImagen(imagen_dividida, hilox); // Se lo envio al hilo correspondiente
-                Mat parte_imagen_procesada = recibirImagen(hilox); // Recibo porcion procesada
+                Mat parte_imagen_procesada = recibirImagen(hilox); // Se recibe parte de la imagen procesada
                 unirImagen(parte_imagen_procesada, nueva_imagen);// Empiezo a generar la imagen final
                 hilox++;// Se pasa otra tarea para el siguiente hilo
             }
             string salida = nombreImagenSalida(*argv[1]); // Se obtiene el nombre del archivo PNG de salida
             imwrite(salida, nueva_imagen); // Se procede a escribir la imágen final y procesada en su totalidad
         }
-        else{ // En caso de ser un procesador esclavo
-            Mat imagen_cortada = recibirImagen(0); // Se recibe una parte de imagen desde el procesador maestro
+        else{ // En caso de ser un proceso esclavo
+            Mat imagen_cortada = recibirImagen(0); // Se recibe una parte de imagen desde el proceso maestro
             Mat imagen_cortada_terminada = procesarImagen(*argv[1], imagen_cortada, escala);  // Se procesa dicha imagen de acuerdo la opción ingresada
-            enviarImagen(imagen_cortada_terminada, 0); // Se envia la parte de imagen procesada al procesador maestro
+            enviarImagen(imagen_cortada_terminada, 0); // Se envia la parte de imagen procesada al proceso maestro
         }
         if(rango == 0){
             cout<<"Nueva imagen generada con exito."<<endl;
@@ -200,4 +213,3 @@ int main(int argc, char** argv){
     }
     return EXIT_SUCCESS;
 }
-
