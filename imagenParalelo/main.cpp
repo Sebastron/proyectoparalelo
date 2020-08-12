@@ -168,10 +168,18 @@ int main(int argc, char** argv){
             cout << "No has ingresado la opción 1, 2 o 3" << endl;
             return EXIT_FAILURE;
         }
-        int rango, procesos;
+        int rango, procesos, cont=0;// Se inicia contador para determinar el proceso actual que se ejecutara
         MPI_Init(&argc, &argv); // Se inicializa el MPI
         MPI_Comm_rank(MPI_COMM_WORLD, &rango); // Se identifica el rango
         MPI_Comm_size(MPI_COMM_WORLD, &procesos); // Se identifica la cantidad de procesos
+        if(procesos <= 1){//En caso de haber un procesador
+            cout << "Se requiere mas de 1 procesador para ejecutar este programa" << endl;
+            return EXIT_FAILURE;
+        }
+        if(procesos > 8){//En caso de haber mas de 8 procesadores
+            cout << "No se requiere mas de 8 procesadores para ejecutar este programa" << endl;
+            return EXIT_FAILURE;
+        }
         Mat imagen = imread(argv[2], -1); // Se lee la imagen a la ruta ingresada
         if (imagen.empty()) { // En caso de que la imagen no sea valida o no se haya ingresado.
             cout << "Usted no ha ingresado la ruta de la imagen existente" << endl;
@@ -186,6 +194,10 @@ int main(int argc, char** argv){
             Mat nueva_imagen; // Se inicializa la nueva imágen
             int hilox = 1; // Se inicializa el contador para asignar tareas a los hilos
             for (int i=0; i< imagen.cols; i = i + longitud_rebanada){ // Empieza el proceso por partes 
+                cont++;
+                if(cont == (procesos-1)){//En caso de ser el ultimo proceso esclavo
+                    longitud_rebanada = longitud_rebanada + (imagen.cols-(longitud_rebanada+i));//Se extrae y se suma el pixel faltante
+                }
                 Mat imagen_dividida = imagen(Rect(i, 0, longitud_rebanada, imagen.rows)).clone(); // Se inicializa la porción de una imagen a procesar
                 enviarImagen(imagen_dividida, hilox); // Se lo envio al hilo correspondiente
                 Mat parte_imagen_procesada = recibirImagen(hilox); // Se recibe parte de la imagen procesada

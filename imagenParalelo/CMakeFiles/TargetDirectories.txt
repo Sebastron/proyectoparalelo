@@ -1,3 +1,0 @@
-/media/sf_Compartido/proyectoparalelo/imagenParalelo/CMakeFiles/rebuild_cache.dir
-/media/sf_Compartido/proyectoparalelo/imagenParalelo/CMakeFiles/edit_cache.dir
-/media/sf_Compartido/proyectoparalelo/imagenParalelo/CMakeFiles/programa.dir
