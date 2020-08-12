@@ -55,7 +55,7 @@ mpirun --hostfile maquinas.txt ./dist/programa 3 ./imagenes/prueba.jpg
 
 _Los resultados de nuevas imagenes generadas estarán almacenados en la carpeta **imagenes**._
 
-_**No olvidar** tener escrito de la(s) ip(s) de la(s) maquina(s) que se utiliza(n)_
+_**No olvidar** tener escrito la(s) ip(s) de la(s) maquina(s) que se utiliza(n)_
 _en el archivo **maquinas.txt**_
 
 ## Herramientas 🛠️
