@@ -4,10 +4,12 @@
 
 ## Descripción 🚀
 
-_Este proyecto consiste en un programa que está implementado con OpenCV, hecho_
+_Este proyecto consiste en un programa que está implementado con OpenCV y OpenMPI, hecho_
 _con lenguaje C++, donde se recibe una imágen y contiene 3 funcionalidades_
 _distintas para modificarlo, las cuales son difuminar, aplicar la escala de_ 
-_gris y aplicar la escala del tamaño X2 a la misma imágen._
+_gris y aplicar la escala del tamaño (X2 por defecto) a la misma imágen._
+_Las limitaciones del programa es que no puede trabajar con más de 8 procesadores,_
+_y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920). _
 
 ### Requisitos 📋
 
@@ -34,18 +36,18 @@ _difuminar la imagen, 2 si desea aplicar la escala de gris, y 3 si desea escalar
 ```
 mpirun --hostfile maquinas.txt ./dist/programa [opcion] [Ruta de la imagen que se desea modificar]
 ```
-Ejemplo, con una imagen de prueba disponible en la carpeta **imagenes**, para la opción 1 se ingresa:
+_Ejemplo, con una imagen de prueba disponible en la carpeta **imagenes**, para la opción 1 se ingresa:_
 
 ```
 mpirun --hostfile maquinas.txt ./dist/programa 1 ./imagenes/prueba.jpg
 ```
-Para la opción 2:
+_Para la opción 2:_
 
 ```
 mpirun --hostfile maquinas.txt ./dist/programa 2 ./imagenes/prueba.jpg
 ```
 
-Para la opción 3:
+_Para la opción 3:_
 
 ```
 mpirun --hostfile maquinas.txt ./dist/programa 3 ./imagenes/prueba.jpg
@@ -65,4 +67,3 @@ _en el archivo **maquinas.txt**_
 * **Sebastián Garrido Valenzuela** - [Sebastron](https://github.com/Sebastron)
 * **Ramiro Uribe Garrido** - [RamiroUribe](https://github.com/RamiroUribe)
 * **Javier Gálvez González** - [javerix](https://github.com/javerix)
-
