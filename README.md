@@ -41,9 +41,9 @@ _Después, se debe ingresar el comando make para construir el proyecto en base a
 make
 ```
 
-_Por último, se debe ingresar de acuerdo en el siguiente comando para ejecutar el programa de acuerdo las_
-_opciones, donde 1 si desea difuminar la imagen, 2 si desea aplicar la escala de gris, y 3 si desea escalar_
-_el tamaño X2:_
+_Por último, se debe ingresar el comando que se verá a continuación para ejecutar el programa, de acuerdo las_
+_opciones que el usuario ingrese, donde 1 si desea difuminar la imagen, 2 si desea aplicar la escala de gris,
+_y 3 si desea escalar el tamaño, que por defecto del programa es el doble (X2):_
 
 ```
 mpirun --hostfile maquinas.txt programa [opcion] [Ruta de la imagen que se desea modificar]
