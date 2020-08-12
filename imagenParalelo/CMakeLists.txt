@@ -1,21 +1,14 @@
-PROJECT( programa )
-
-cmake_minimum_required(VERSION 2.8)
-
+cmake_minimum_required(VERSION 3.1)
+project( programa )
 find_package( OpenCV REQUIRED )
-
 find_package( MPI REQUIRED )
-
-ADD_EXECUTABLE( programa main.cpp )
-
+add_executable( programa main.cpp)
 add_definitions( -DOMPI_SKIP_MPICXX )
-
-SET(CMAKE_C_COMPILER mpicc)
-
-SET(CMAKE_CXX_COMPILER mpicxx)
-
+#Enable C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+#OpenCV dir
 SET(OPENCV_DIR /usr/local/OpenCV/lib/cmake/opencv4)
-
-target_link_libraries( programa mpi ${OpenCV_LIBS} )
-
-
+include_directories(OPENMPI_DIR /usr/include/x86_64-linux-gnu/openmpi )
+include_directories(MPI_DIR /usr/include/x86_64-linux-gnu/mpi )
+target_link_libraries( programa ${OpenCV_LIBS} ${MPI_C_LIBRARIES} )
