@@ -25,7 +25,10 @@ sudo apt-get install build-essential
 ```
 sudo apt-get install libopencv-dev
 ```
-
+* Tener instalado cmake, se podrá instalar ingresando el siguiente comando en el terminal:
+```
+sudo apt-get install cmake
+```
 ### Ejecución del programa 🔧
 
 _Para ejecutar una de las opciones que contiene el programa, primero se debe posicionar_
