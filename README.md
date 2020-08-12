@@ -9,7 +9,7 @@ _con lenguaje C++, donde se recibe una imágen y contiene 3 funcionalidades_
 _distintas para modificarlo, las cuales son difuminar, aplicar la escala de_ 
 _gris y aplicar la escala del tamaño (X2 por defecto) a la misma imágen._
 _Las limitaciones del programa es que no puede trabajar con más de 8 procesadores,_
-_y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920). _
+_y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920)._
 
 ### Requisitos 📋
 
@@ -53,7 +53,7 @@ _Para la opción 3:_
 mpirun --hostfile maquinas.txt ./dist/programa 3 ./imagenes/prueba.jpg
 ```
 
--Los resultados de nuevas imagenes generadas estarán almacenados en la carpeta **imagenes**._
+_Los resultados de nuevas imagenes generadas estarán almacenados en la carpeta **imagenes**._
 
 _**No olvidar** tener escrito de la(s) ip(s) de la(s) maquina(s) que se utiliza(n)_
 _en el archivo **maquinas.txt**_
