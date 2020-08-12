@@ -29,28 +29,40 @@ sudo apt-get install libopencv-dev
 ### Ejecución del programa 🔧
 
 _Para ejecutar una de las opciones que contiene el programa, primero se debe posicionar_
-_en la carpeta **imagenParalelo** del proyecto. Luego, se debe ingresar de acuerdo en el_
-_siguiente comando para ejecutar el programa de acuerdo las opciones, donde 1 si desea_ 
-_difuminar la imagen, 2 si desea aplicar la escala de gris, y 3 si desea escalar el tamaño X2:_
+_en la carpeta **imagenParalelo** del proyecto. Luego, se debe ingresar el siguiente comando_
+_que ejecuta cmake, con el fin de localizar las librerias que se encuentran instaladas:_
 
 ```
-mpirun --hostfile maquinas.txt ./dist/programa [opcion] [Ruta de la imagen que se desea modificar]
+cmake CMakeLists.txt
+```
+_Después, se debe ingresar el comando make para construir el proyecto en base al archivo main.cpp:_
+
+```
+make
+```
+
+_Por último, se debe ingresar de acuerdo en el siguiente comando para ejecutar el programa de acuerdo las_
+_opciones, donde 1 si desea difuminar la imagen, 2 si desea aplicar la escala de gris, y 3 si desea escalar_
+_el tamaño X2:_
+
+```
+mpirun --hostfile maquinas.txt programa [opcion] [Ruta de la imagen que se desea modificar]
 ```
 _Ejemplo, con una imagen de prueba disponible en la carpeta **imagenes**, para la opción 1 se ingresa:_
 
 ```
-mpirun --hostfile maquinas.txt ./dist/programa 1 ./imagenes/prueba.jpg
+mpirun --hostfile maquinas.txt programa 1 ./imagenes/prueba.jpg
 ```
 _Para la opción 2:_
 
 ```
-mpirun --hostfile maquinas.txt ./dist/programa 2 ./imagenes/prueba.jpg
+mpirun --hostfile maquinas.txt programa 2 ./imagenes/prueba.jpg
 ```
 
 _Para la opción 3:_
 
 ```
-mpirun --hostfile maquinas.txt ./dist/programa 3 ./imagenes/prueba.jpg
+mpirun --hostfile maquinas.txt programa 3 ./imagenes/prueba.jpg
 ```
 
 _Los resultados de nuevas imagenes generadas estarán almacenados en la carpeta **imagenes**._
