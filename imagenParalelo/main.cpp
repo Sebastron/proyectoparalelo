@@ -20,7 +20,7 @@ using namespace std;
 const int maximo_bytes=8*1920*1920; // Se establece un límite, donde no se puede trabajar mas de 8 procesos y la imagen no puede superar el ancho y largo de 1920 
 uchar buffer[maximo_bytes]; // Variable global que contiene datos para la transformación de imagenes, para facilitar el envio y recibo de ellos
 float escala = 2.0; // Valor para escalar una imagen, en este caso, escala de x2 
-float desviacion = 0.99; // Se utiliza para difuminar una imagen
+float desviacion = 0.69; // Se utiliza para difuminar una imagen
 
 //Funciones utilizadas
 
