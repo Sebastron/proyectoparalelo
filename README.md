@@ -27,7 +27,7 @@ sudo apt-get install libopencv-dev
 ```
 * Tener instalado cmake, se podrá instalar ingresando el siguiente comando en el terminal:
 ```
-sudo apt-get install cmake
+sudo apt install cmake
 ```
 ### Ejecución del programa 🔧
 
