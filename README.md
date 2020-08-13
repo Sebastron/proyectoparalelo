@@ -8,8 +8,8 @@ _Este proyecto consiste en un programa que está implementado con OpenCV y OpenM
 _con lenguaje C++, donde se recibe una imágen y contiene 3 funcionalidades_
 _distintas para modificarlo, las cuales son difuminar, aplicar la escala de_ 
 _gris y aplicar la escala del tamaño (X2 por defecto) a la misma imágen._
-_Las limitaciones del programa es que no puede trabajar con más de 8 procesadores,_
-_y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920)._
+_Las limitaciones del programa es que no puede trabajar con un procesador y no más de 8_ 
+_procesadores, y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920)._
 
 ### Requisitos 📋
 
@@ -44,8 +44,9 @@ _Después, se debe ingresar el comando make para construir el proyecto en base a
 make
 ```
 
-_Por último, se debe ingresar el comando que se verá a continuación para ejecutar el programa, de acuerdo las_
-_opciones que el usuario ingrese, donde 1 si desea difuminar la imagen, 2 si desea aplicar la escala de gris,
+_Por último, se debe escribir la(s) ip(s) de las máquinas que se trabajan en el archivo  **maquinas.txt**,_
+_e ingresar el comando que se verá a continuación para ejecutar el programa de acuerdo las opciones que_
+_el usuario ingrese, donde 1 si desea difuminar la imagen, 2 si desea aplicar la escala de gris,_
 _y 3 si desea escalar el tamaño, que por defecto del programa es el doble (X2):_
 
 ```
@@ -70,8 +71,6 @@ mpirun --hostfile maquinas.txt programa 3 ./imagenes/prueba.jpg
 
 _Los resultados de nuevas imagenes generadas estarán almacenados en la carpeta **imagenes**._
 
-_**No olvidar** tener escrito la(s) ip(s) de la(s) maquina(s) que se utiliza(n)_
-_en el archivo **maquinas.txt**_
 
 ## Herramientas 🛠️
 
