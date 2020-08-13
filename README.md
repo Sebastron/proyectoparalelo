@@ -9,7 +9,7 @@ _con lenguaje C++, donde se recibe una imágen y contiene 3 funcionalidades_
 _distintas para modificarlo, las cuales son difuminar, aplicar la escala de_ 
 _gris y aplicar la escala del tamaño (X2 por defecto) a la misma imágen._
 _Las limitaciones del programa es que no puede trabajar con un procesador y no más de 8_ 
-_procesadores, y no puede recibir una imagen que supere 1920 del largo y ancho (1920x1920)._
+_procesadores, y como sugerencia no recibir una imagen que supere 1920 del largo y ancho (1920x1920)._
 
 ### Requisitos 📋
 
